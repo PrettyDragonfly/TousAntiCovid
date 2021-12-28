@@ -13,16 +13,36 @@
     <br/>
     <h2><span th:text="${#lists.size(users)}"></span> users registered</h2>
     <ul th:each="u: ${users}">
-        <li><span th:text="${u.getFullName()}"></span><span th:if="${u.isFriendWith(user)}"> (friend)</span> <a href="#" th:unless="${u.isFriendWith(user) || u.isCurrentUser(user) || u.hasRequestFrom(user.getUser()) }" th:attr="onclick=|makeFriendRequest(${u.getId()});return false;|">Add as a friend</a><span th:if="${u.hasRequestFrom(user.getUser())}">(requested)</span></li>
+        <li><span th:text="${u.getFullName()}"></span>
+            <span th:if="${u.isFriendWith(user)}"> (friend)</span>
+            <a href="#" th:unless="${u.isFriendWith(user) || u.isCurrentUser(user) || u.hasRequestFrom(user.getUser()) || user.getUser().hasRequestFrom(u) }" th:attr="onclick=|makeFriendRequest(${u.getId()});return false;|">Add as a friend</a>
+            <span th:if="${u.hasRequestFrom(user.getUser())}">(requested)</span>
+            <span th:if="${user.getUser().hasRequestFrom(u)}">
+                <a href="#" th:attr="onclick=|acceptFriendRequest(${u.getId()});return false;|">Accept</a>
+                <a href="#" th:attr="onclick=|rejectFriendRequest(${u.getId()});return false;|">Reject</a>
+            </span></li>
     </ul>
 </div>
 
 </body>
 
 <script>
+    // ToDo: extract in a file to avoid duplication
     function makeFriendRequest(userId) {
         console.log("asking user " + userId + " as a friend")
         jQuery.get("/app/api/v1/request-friend/" + userId)
+        console.log("done")
+    }
+
+    function acceptFriendRequest(userId) {
+        console.log("accepting friend request from user " + userId)
+        jQuery.get("/app/api/v1/friend-request/" + userId + "/accept")
+        console.log("done")
+    }
+
+    function rejectFriendRequest(userId) {
+        console.log("accepting friend request from user " + userId)
+        jQuery.get("/app/api/v1/friend-request/" + userId + "/reject")
         console.log("done")
     }
 </script>
