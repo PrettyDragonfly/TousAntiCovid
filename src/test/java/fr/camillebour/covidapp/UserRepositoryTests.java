@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 
 @DataJpaTest
@@ -23,11 +24,14 @@ public class UserRepositoryTests {
     @Autowired
     private UserRepository repo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Test
     public void testCreateUser() {
         User user = new User();
         user.setEmail("camille@gmail.com");
-        user.setPassword("securePassword2022!");
+        user.setPassword(passwordEncoder.encode("securePassword2022!"));
         user.setFirstName("Camille");
         user.setLastName("Bour");
 

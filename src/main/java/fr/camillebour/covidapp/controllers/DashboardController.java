@@ -1,18 +1,19 @@
 package fr.camillebour.covidapp.controllers;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import fr.camillebour.covidapp.models.CovidAppUserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class DashboardController {
 
     @GetMapping("/dashboard")
-    public String dashboard(@AuthenticationPrincipal User user, Model model) {
-        String username = user.getUsername();
+    public String dashboard(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        model.addAttribute("user", userDetails);
 
-        return "Dashboard - Welcome " + username;
+        return "dashboard_index";
     }
 }

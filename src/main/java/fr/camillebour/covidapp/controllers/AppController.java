@@ -12,9 +12,14 @@ public class AppController {
     @GetMapping("/app")
     public String appHome(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
-        System.out.println("User has authorities: " + userDetails.getAuthorities());
+
+        boolean isAdmin = false;
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            isAdmin = true;
+        }
 
         model.addAttribute("user", userDetails);
+        model.addAttribute("isAdmin", isAdmin);
 
         return "app_index";
     }
