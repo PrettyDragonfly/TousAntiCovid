@@ -13,9 +13,17 @@
     <br/>
     <h2><span th:text="${#lists.size(users)}"></span> users registered</h2>
     <ul th:each="u: ${users}">
-        <li><span th:text="${u.getFullName()}"></span><span th:if="${u.isFriendWith(user)}"> (friend)</span></li>
+        <li><span th:text="${u.getFullName()}"></span><span th:if="${u.isFriendWith(user)}"> (friend)</span> <a href="#" th:unless="${u.isFriendWith(user) || u.isCurrentUser(user) || u.hasRequestFrom(user.getUser()) }" th:attr="onclick=|makeFriendRequest(${u.getId()});return false;|">Add as a friend</a><span th:if="${u.hasRequestFrom(user.getUser())}">(requested)</span></li>
     </ul>
 </div>
 
 </body>
+
+<script>
+    function makeFriendRequest(userId) {
+        console.log("asking user " + userId + " as a friend")
+        jQuery.get("/app/api/v1/request-friend/" + userId)
+        console.log("done")
+    }
+</script>
 </html>

@@ -1,5 +1,9 @@
 package fr.camillebour.covidapp.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +14,7 @@ public class User {
 
     public User() {
         this.friends = new ArrayList<User>();
+        //this.friendRequest = new ArrayList<FriendRequest>();
     }
 
     @Id
@@ -52,6 +57,18 @@ public class User {
             )
     )
     private Collection<User> friends;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "friend_request",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "fr_user_id", referencedColumnName = "id"
+            )
+    )
+    private Collection<User> friendRequest;
 
     public Long getId() {
         return id;
@@ -150,5 +167,29 @@ public class User {
         User u = (User) o;
 
         return u.getId().equals(this.getId());
+    }
+
+    public Collection<User> getFriendRequest() {
+        return friendRequest;
+    }
+
+    public void setFriendRequest(Collection<User> friendRequest) {
+        this.friendRequest = friendRequest;
+    }
+
+    public void addFriendRequestFrom(User u) {
+        this.friendRequest.add(u);
+    }
+
+    public void removeFriendRequestFrom(User u) {
+        this.friendRequest.remove(u);
+    }
+
+    public boolean isCurrentUser(CovidAppUserDetails userDetails) {
+        return this.equals(userDetails.getUser());
+    }
+
+    public boolean hasRequestFrom(User u) {
+        return this.friendRequest.contains(u);
     }
 }

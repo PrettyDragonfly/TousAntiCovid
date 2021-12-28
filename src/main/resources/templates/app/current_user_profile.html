@@ -19,7 +19,27 @@
         <li th:text="${friend.getFullName()}"></li>
     </ul>
 
+    <h2>Friend's request (<span th:text="${#lists.size(user.getFriendRequests())}"></span>)</h2>
+    <ul th:each="fr: ${user.getFriendRequests()}">
+        <li><span th:text="${fr.getFullName()}"></span>
+            <a href="#" th:attr="onclick=|acceptFriendRequest(${fr.getId()});return false;|">Accept</a>
+            <a href="#" th:attr="onclick=|rejectFriendRequest(${fr.getId()});return false;|">Reject</a></li>
+    </ul>
+
 </div>
 
 </body>
+<script>
+    function acceptFriendRequest(userId) {
+        console.log("accepting friend request from user " + userId)
+        jQuery.get("/app/api/v1/friend-request/" + userId + "/accept")
+        console.log("done")
+    }
+
+    function rejectFriendRequest(userId) {
+        console.log("accepting friend request from user " + userId)
+        jQuery.get("/app/api/v1/friend-request/" + userId + "/reject")
+        console.log("done")
+    }
+</script>
 </html>

@@ -72,7 +72,16 @@ public class CovidAppUserDetails implements UserDetails {
         return user.getFriends();
     }
 
+    public Collection<User> getFriendRequests() {
+        return user.getFriendRequest();
+    }
+
     public boolean isFriendWith(User u) {
         return user.isFriendWith(u);
     }
+
+    public User getUser() {
+        return user;
+    }
+
 }
