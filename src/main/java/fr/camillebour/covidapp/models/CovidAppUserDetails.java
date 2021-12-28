@@ -57,7 +57,22 @@ public class CovidAppUserDetails implements UserDetails {
     }
 
     public String getFullName() {
-        return user.getFirstName() + " " + user.getLastName();
+        return user.getFullName();
     }
 
+    public void addFriend(User u) {
+        user.addFriend(u);
+    }
+
+    public void removeFriend(User u) {
+        user.removeFriend(u);
+    }
+
+    public Collection<User> getFriends() {
+        return user.getFriends();
+    }
+
+    public boolean isFriendWith(User u) {
+        return user.isFriendWith(u);
+    }
 }

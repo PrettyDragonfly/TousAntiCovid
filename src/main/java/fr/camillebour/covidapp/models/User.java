@@ -1,11 +1,17 @@
 package fr.camillebour.covidapp.models;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
 @Table(name = "users")
 public class User {
+
+    public User() {
+        this.friends = new ArrayList<User>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +40,18 @@ public class User {
                     name = "role_id", referencedColumnName = "id")
     )
     private Collection<Role> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_friends",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "friend_id", referencedColumnName = "id"
+            )
+    )
+    private Collection<User> friends;
 
     public Long getId() {
         return id;
@@ -75,6 +93,10 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getFullName() {
+        return this.getFirstName() + " " + this.getLastName();
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -89,5 +111,44 @@ public class User {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    public Collection<User> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Collection<User> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriend(User user) {
+        this.friends.add(user);
+    }
+
+    public void removeFriend(User user) {
+        this.friends.remove(user);
+    }
+
+    public boolean isFriendWith(User u) {
+        return this.friends.contains(u);
+    }
+
+    public boolean isFriendWith(CovidAppUserDetails u) {
+        return u.isFriendWith(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof User)) {
+            return false;
+        }
+
+        User u = (User) o;
+
+        return u.getId().equals(this.getId());
     }
 }

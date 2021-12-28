@@ -9,12 +9,12 @@
 </head>
 <body>
 <div class="container text-center">
-    <h1>Welcome <span th:text="${user.getFullName()}"></span></h1>
+    <h1>Application's users</h1>
     <br/>
-
-    <a th:href="@{/app/profile/me}">My Profile</a>
-    <a th:href="@{/app/users}">See all users</a>
-    <a th:if="${isAdmin}" th:href="@{/dashboard}">Administration dashboard</a>
+    <h2><span th:text="${#lists.size(users)}"></span> users registered</h2>
+    <ul th:each="u: ${users}">
+        <li><span th:text="${u.getFullName()}"></span><span th:if="${u.isFriendWith(user)}"> (friend)</span></li>
+    </ul>
 </div>
 
 </body>
