@@ -1,0 +1,9 @@
+version: "3.1"
+services:
+  db:
+    image: mariadb:latest
+    container_name: maria_db
+    env_file:
+      - db.env
+    ports:
+      - "3306:3306"
