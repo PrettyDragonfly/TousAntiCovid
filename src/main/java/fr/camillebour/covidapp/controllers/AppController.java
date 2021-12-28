@@ -21,6 +21,6 @@ public class AppController {
         model.addAttribute("user", userDetails);
         model.addAttribute("isAdmin", isAdmin);
 
-        return "app_index";
+        return "app/index";
     }
 }

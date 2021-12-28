@@ -14,6 +14,6 @@ public class DashboardController {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         model.addAttribute("user", userDetails);
 
-        return "dashboard_index";
+        return "dashboard/index";
     }
 }
