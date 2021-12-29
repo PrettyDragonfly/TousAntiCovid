@@ -29,7 +29,7 @@ public class AppRestController {
 
         if (userToAsk.isPresent()) {
             User u = userToAsk.get();
-            if (!u.hasRequestFrom(userDetails.getUser())) {
+            if (!u.hasRequestFrom(userDetails.getUser()) && !u.getFriends().contains(userDetails.getUser())) {
                 u.addFriendRequestFrom(userDetails.getUser());
                 userRepo.save(u);
             }
@@ -48,7 +48,7 @@ public class AppRestController {
 
         if (userAsking.isPresent()) {
             User u = userAsking.get();
-            if (userDetails.getFriendRequests().contains(u)) {
+            if (!userDetails.getUser().getFriends().contains(u) && userDetails.getFriendRequests().contains(u)) {
                 userDetails.addFriend(u);
                 userDetails.getUser().removeFriendRequestFrom(u);
                 u.addFriend(userDetails.getUser());
@@ -70,7 +70,7 @@ public class AppRestController {
 
         if (userAsking.isPresent()) {
             User u = userAsking.get();
-            if (userDetails.getFriendRequests().contains(u)) {
+            if (!userDetails.getUser().getFriends().contains(u) && userDetails.getFriendRequests().contains(u)) {
                 userDetails.getUser().removeFriendRequestFrom(u);
             }
         } else {
