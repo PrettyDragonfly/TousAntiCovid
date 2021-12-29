@@ -37,7 +37,7 @@ public class AppController {
     @GetMapping("/app/profile/me")
     public String appCurrentUserProfile(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
-        User currentUser = userRepo.findById(userDetails.getUserId()).get();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
 
         System.out.println("Current user # friend request: " + currentUser.getFriendRequests().toArray().length);
 
@@ -111,7 +111,6 @@ public class AppController {
     }
 
     private User getCurrentUserFromUserDetails(CovidAppUserDetails userDetails) {
-        Optional<User> sameUser = userRepo.findById(userDetails.getUserId());
-        return sameUser.orElse(null);
+        return userRepo.findCustomId(userDetails.getUserId());
     }
 }

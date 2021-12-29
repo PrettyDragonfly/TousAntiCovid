@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,11 +22,11 @@ public class AppRestController {
     private UserRepository userRepo;
 
     @GetMapping("/request-friend/{id}")
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResponseEntity requestFriend(Authentication authentication, @PathVariable Long id) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
 
-        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+        User currentUser = userRepo.findCustomId(currentUserDetails.getUserId());
         Optional<User> userToAsk = userRepo.findById(id);
 
         if (userToAsk.isPresent()) {
@@ -51,11 +52,13 @@ public class AppRestController {
     }
 
     @GetMapping("/friend-request/{id}/accept")
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResponseEntity acceptFriendRequest(Authentication authentication, @PathVariable Long id) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
 
-        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+        User currentUser = userRepo.findCustomId(currentUserDetails.getUserId());
+
+        System.out.println("Current user # friend request = " + currentUser.getFriendRequests().size());
         Optional<User> userAsking = userRepo.findById(id);
 
         if (userAsking.isPresent()) {
@@ -77,7 +80,7 @@ public class AppRestController {
     }
 
     @GetMapping("/friend-request/{id}/reject")
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResponseEntity rejectFriendRequest(Authentication authentication, @PathVariable Long id) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
