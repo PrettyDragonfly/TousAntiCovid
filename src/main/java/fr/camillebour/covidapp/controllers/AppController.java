@@ -26,8 +26,9 @@ public class AppController {
     @GetMapping("/app")
     public String appHome(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = getCurrentUserFromUserDetails(userDetails);
 
-        model.addAttribute("user", userDetails);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
 
         return "app/index";
@@ -36,8 +37,11 @@ public class AppController {
     @GetMapping("/app/profile/me")
     public String appCurrentUserProfile(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(userDetails.getUserId()).get();
 
-        model.addAttribute("user", userDetails);
+        System.out.println("Current user # friend request: " + currentUser.getFriendRequests().toArray().length);
+
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
 
         return "app/current_user_profile";
@@ -46,12 +50,14 @@ public class AppController {
     @GetMapping("/app/user/{id}")
     public ModelAndView appUserProfile(Authentication authentication, Model model, @PathVariable Long id) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = getCurrentUserFromUserDetails(currentUserDetails);
+
         Optional<User> userToShow = userRepo.findById(id);
 
         if (userToShow.isPresent()) {
             User u = userToShow.get();
 
-            if (u.equals(currentUserDetails.getUser())) {
+            if (u.equals(currentUser)) {
                 return new ModelAndView("redirect:/app/profile/me");
             }
 
@@ -62,7 +68,7 @@ public class AppController {
             );
         }
 
-        model.addAttribute("user", currentUserDetails);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("isAdmin", isCurrentUserAdmin(currentUserDetails));
 
         return new ModelAndView("app/user_profile");
@@ -71,33 +77,41 @@ public class AppController {
     @GetMapping("/app/users/search")
     public String appUsersSearch(Authentication authentication, Model model, @RequestParam(required = true) String searchTerm) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = getCurrentUserFromUserDetails(currentUserDetails);
+
         Collection<User> allMatchingUsers = userRepo.findMatch(searchTerm);
+        allMatchingUsers.remove(currentUser);
 
-        allMatchingUsers.remove(currentUserDetails.getUser());
-
-        model.addAttribute("user", currentUserDetails);
+        model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", allMatchingUsers);
         model.addAttribute("isAdmin", isCurrentUserAdmin(currentUserDetails));
+
+        allMatchingUsers.forEach(u -> System.out.println("User: " + u.getFullName() + " has " + (long) u.getFriendRequests().size() + " friend requests"));
 
         return "app/users_search";
     }
 
-    @GetMapping("/app/users")
-    public String appUsers(Authentication authentication, Model model) {
-        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
-        Collection<User> allUsers = userRepo.findAll();
-
-        model.addAttribute("user", userDetails);
-        model.addAttribute("users", allUsers);
-        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
-
-        return "app/users";
-    }
+//    @GetMapping("/app/users")
+//    public String appUsers(Authentication authentication, Model model) {
+//        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+//        Collection<User> allUsers = userRepo.findAll();
+//
+//        model.addAttribute("user", userDetails);
+//        model.addAttribute("users", allUsers);
+//        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+//
+//        return "app/users";
+//    }
 
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             return true;
         }
         return false;
+    }
+
+    private User getCurrentUserFromUserDetails(CovidAppUserDetails userDetails) {
+        Optional<User> sameUser = userRepo.findById(userDetails.getUserId());
+        return sameUser.orElse(null);
     }
 }

@@ -1,9 +1,5 @@
 package fr.camillebour.covidapp.models;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +10,6 @@ public class User {
 
     public User() {
         this.friends = new ArrayList<User>();
-        //this.friendRequest = new ArrayList<FriendRequest>();
     }
 
     @Id
@@ -68,7 +63,7 @@ public class User {
                     name = "fr_user_id", referencedColumnName = "id"
             )
     )
-    private Collection<User> friendRequest;
+    private Collection<User> friendRequests;
 
     public Long getId() {
         return id;
@@ -150,10 +145,6 @@ public class User {
         return this.friends.contains(u);
     }
 
-    public boolean isFriendWith(CovidAppUserDetails u) {
-        return u.isFriendWith(this);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == this) {
@@ -169,27 +160,24 @@ public class User {
         return u.getId().equals(this.getId());
     }
 
-    public Collection<User> getFriendRequest() {
-        return friendRequest;
+    public Collection<User> getFriendRequests() {
+        return friendRequests;
     }
 
-    public void setFriendRequest(Collection<User> friendRequest) {
-        this.friendRequest = friendRequest;
+    public void setFriendRequests(Collection<User> friendRequest) {
+        this.friendRequests = friendRequest;
     }
 
     public void addFriendRequestFrom(User u) {
-        this.friendRequest.add(u);
+        System.out.println("Adding friend request from " + u.getId());
+        this.friendRequests.add(u);
     }
 
     public void removeFriendRequestFrom(User u) {
-        this.friendRequest.remove(u);
-    }
-
-    public boolean isCurrentUser(CovidAppUserDetails userDetails) {
-        return this.equals(userDetails.getUser());
+        this.friendRequests.remove(u);
     }
 
     public boolean hasRequestFrom(User u) {
-        return this.friendRequest.contains(u);
+        return this.friendRequests.contains(u);
     }
 }

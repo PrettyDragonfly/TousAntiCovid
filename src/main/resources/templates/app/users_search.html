@@ -15,10 +15,10 @@
     <h2><span th:text="${#lists.size(users)}"></span> users matching</h2>
     <ul th:each="u: ${users}">
         <li><span th:text="${u.getFullName()}"></span>
-            <span th:if="${u.isFriendWith(user)}"> (friend)</span>
-            <a href="#" th:unless="${u.isFriendWith(user) || u.isCurrentUser(user) || u.hasRequestFrom(user.getUser()) || user.getUser().hasRequestFrom(u) }" th:attr="onclick=|makeFriendRequest(${u.getId()});return false;|">Add as a friend</a>
-            <span th:if="${u.hasRequestFrom(user.getUser())}">(requested)</span>
-            <span th:if="${user.getUser().hasRequestFrom(u)}">
+            <span th:if="${u.isFriendWith(currentUser)}"> (friend)</span>
+            <a href="#" th:unless="${u.isFriendWith(currentUser) || u.hasRequestFrom(currentUser) || currentUser.hasRequestFrom(u) }" th:attr="onclick=|makeFriendRequest(${u.getId()});return false;|">Add as a friend</a>
+            <span th:if="${u.hasRequestFrom(currentUser)}">(requested)</span>
+            <span th:if="${currentUser.hasRequestFrom(u)}">
                 <a href="#" th:attr="onclick=|acceptFriendRequest(${u.getId()});return false;|">Accept</a>
                 <a href="#" th:attr="onclick=|rejectFriendRequest(${u.getId()});return false;|">Reject</a>
             </span></li>

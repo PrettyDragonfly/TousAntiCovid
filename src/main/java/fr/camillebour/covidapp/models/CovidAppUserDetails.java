@@ -56,32 +56,8 @@ public class CovidAppUserDetails implements UserDetails {
         return user.isEnabled();
     }
 
-    public String getFullName() {
-        return user.getFullName();
-    }
-
-    public void addFriend(User u) {
-        user.addFriend(u);
-    }
-
-    public void removeFriend(User u) {
-        user.removeFriend(u);
-    }
-
-    public Collection<User> getFriends() {
-        return user.getFriends();
-    }
-
-    public Collection<User> getFriendRequests() {
-        return user.getFriendRequest();
-    }
-
-    public boolean isFriendWith(User u) {
-        return user.isFriendWith(u);
-    }
-
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return user.getId();
     }
 
 }

@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @RestController
@@ -23,14 +21,25 @@ public class AppRestController {
     private UserRepository userRepo;
 
     @GetMapping("/request-friend/{id}")
+    @Transactional
     public ResponseEntity requestFriend(Authentication authentication, @PathVariable Long id) {
-        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
         Optional<User> userToAsk = userRepo.findById(id);
 
         if (userToAsk.isPresent()) {
             User u = userToAsk.get();
-            if (!u.hasRequestFrom(userDetails.getUser()) && !u.getFriends().contains(userDetails.getUser())) {
-                u.addFriendRequestFrom(userDetails.getUser());
+
+            if (u.equals(currentUser)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "you better be friend with yourself already..."
+                );
+            }
+
+            if (!u.hasRequestFrom(currentUser) && !u.getFriends().contains(currentUser)) {
+                System.out.println("User " + currentUser.getId() + " requested " + u.getId() + " as a friend...");
+                u.addFriendRequestFrom(currentUser);
                 userRepo.save(u);
             }
         } else {
@@ -42,18 +51,22 @@ public class AppRestController {
     }
 
     @GetMapping("/friend-request/{id}/accept")
+    @Transactional
     public ResponseEntity acceptFriendRequest(Authentication authentication, @PathVariable Long id) {
-        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
         Optional<User> userAsking = userRepo.findById(id);
 
         if (userAsking.isPresent()) {
             User u = userAsking.get();
-            if (!userDetails.getUser().getFriends().contains(u) && userDetails.getFriendRequests().contains(u)) {
-                userDetails.addFriend(u);
-                userDetails.getUser().removeFriendRequestFrom(u);
-                u.addFriend(userDetails.getUser());
+            if (!currentUser.isFriendWith(u) && currentUser.getFriendRequests().contains(u)) {
+                System.out.println("User " + currentUser.getId() + " accepted " + u.getId() + " as a friend");
+                currentUser.addFriend(u);
+                currentUser.removeFriendRequestFrom(u);
+                u.addFriend(currentUser);
                 userRepo.save(u);
-                userRepo.save(userDetails.getUser());
+                userRepo.save(currentUser);
             }
         } else {
             throw new ResponseStatusException(
@@ -64,14 +77,18 @@ public class AppRestController {
     }
 
     @GetMapping("/friend-request/{id}/reject")
+    @Transactional
     public ResponseEntity rejectFriendRequest(Authentication authentication, @PathVariable Long id) {
-        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
         Optional<User> userAsking = userRepo.findById(id);
 
         if (userAsking.isPresent()) {
             User u = userAsking.get();
-            if (!userDetails.getUser().getFriends().contains(u) && userDetails.getFriendRequests().contains(u)) {
-                userDetails.getUser().removeFriendRequestFrom(u);
+            if (!currentUser.getFriends().contains(u) && currentUser.getFriendRequests().contains(u)) {
+                System.out.println("User " + currentUser.getId() + " rejected " + u.getId() + " as a friend");
+                currentUser.removeFriendRequestFrom(u);
+                userRepo.save(currentUser);
             }
         } else {
             throw new ResponseStatusException(
@@ -86,5 +103,10 @@ public class AppRestController {
             return true;
         }
         return false;
+    }
+
+    private User getCurrentUserFromUserDetails(CovidAppUserDetails userDetails) {
+        Optional<User> sameUser = userRepo.findById(userDetails.getUserId());
+        return sameUser.orElse(null);
     }
 }

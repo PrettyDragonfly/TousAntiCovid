@@ -1,9 +1,9 @@
 <div th:fragment="friends_list">
-    <h2>Friends (<span th:text="${#lists.size(user.getFriends())}"></span>)</h2>
+    <h2>Friends (<span th:text="${#lists.size(currentUser.getFriends())}"></span>)</h2>
     <div class="container text-left" style="width: 50%">
         <th:block th:with="colCount=${10}">
-            <div th:each="r : ${#numbers.sequence(0, user.getFriends().size(), colCount)}" class="row">
-                <div th:each="c : ${#numbers.sequence(0, colCount - 1)}" th:if="${r + c &lt; user.getFriends().size()}" th:with="friend=${user.getFriends().get(r + c)}" class="col-sm">
+            <div th:each="r : ${#numbers.sequence(0, currentUser.getFriends().size(), colCount)}" class="row">
+                <div th:each="c : ${#numbers.sequence(0, colCount - 1)}" th:if="${r + c &lt; currentUser.getFriends().size()}" th:with="friend=${currentUser.getFriends().get(r + c)}" class="col-sm">
                     <div class="card" style="width: 10rem;">
                         <img class="card-img-top" src="/img/user.png" alt="User picture">
                         <div class="card-body">
