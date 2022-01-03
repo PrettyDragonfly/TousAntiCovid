@@ -1,10 +1,14 @@
 package fr.camillebour.covidapp.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +37,9 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "birthdate")
-    private Date birthdate;
+    private LocalDate birthdate;
 
     @Column(name = "enabled")
     private boolean enabled;
@@ -189,25 +194,30 @@ public class User {
         return this.friendRequests.contains(u);
     }
 
-    public Date getBirthdate() {
+    public LocalDate getBirthdate() {
         return birthdate;
     }
 
     public String getBirthdateString() {
-        return new SimpleDateFormat("dd/MM/yyyy").format(this.birthdate);
+        return this.birthdate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
     }
 
-    public void setBirthdate(Date birthdate) {
+    public String getBirthdateValue() {
+        return this.birthdate.toString();
+    }
+
+    public String getMaxBirthdateValue() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    }
+
+    public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
     }
 
     public int getAge() {
         LocalDate currentDate = LocalDate.now();
-        LocalDate Birthdate = this.birthdate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-        if (Birthdate != null) {
-            return Period.between(Birthdate, currentDate).getYears();
+        if (this.birthdate != null) {
+            return Period.between(this.birthdate, currentDate).getYears();
         } else {
             return 0;
         }
