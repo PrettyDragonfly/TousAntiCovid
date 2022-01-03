@@ -1,6 +1,10 @@
 package fr.camillebour.covidapp.models;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -189,7 +193,23 @@ public class User {
         return birthdate;
     }
 
+    public String getBirthdateString() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(this.birthdate);
+    }
+
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public int getAge() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate Birthdate = this.birthdate.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        if (Birthdate != null) {
+            return Period.between(Birthdate, currentDate).getYears();
+        } else {
+            return 0;
+        }
     }
 }
