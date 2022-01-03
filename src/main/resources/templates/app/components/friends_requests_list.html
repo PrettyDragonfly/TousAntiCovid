@@ -1,0 +1,8 @@
+<div th:fragment="friends_requests_list">
+    <h2>Demande(s) en ami (<span th:text="${#lists.size(currentUser.getFriendRequests())}"></span>)</h2>
+    <ul th:each="fr: ${currentUser.getFriendRequests()}">
+        <li><span th:text="${fr.getFullName()}"></span>
+            <a href="#" th:attr="onclick=|acceptFriendRequest(${fr.getId()});return false;|">Accepter</a>
+            <a href="#" th:attr="onclick=|rejectFriendRequest(${fr.getId()});return false;|">Refuser</a></li>
+    </ul>
+</div>

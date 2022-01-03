@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -56,6 +58,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         User adminUser = new User();
         adminUser.setFirstName("Admin");
         adminUser.setLastName("Istrator");
+        adminUser.setBirthdate(Date.from(Instant.parse("1990-11-30T18:35:24.00Z")));
         adminUser.setPassword(passwordEncoder.encode("admin2022"));
         adminUser.setEmail("admin@test.com");
         adminUser.setRoles(List.of(adminRole));

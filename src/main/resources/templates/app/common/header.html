@@ -21,8 +21,8 @@
                         <img src="/img/user.png" alt="user-profile-picture" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser">
-                        <li><a class="dropdown-item" href="#">Amis</a></li>
-                        <li><a class="dropdown-item" th:href="@{/app/profile/me}">Profil</a></li>
+                        <li><a class="dropdown-item" th:href="@{/app/users/me}">Mon profil</a></li>
+                        <li><a class="dropdown-item" th:href="@{/app/users/me/friends}">Amis</a></li>
                         <li><a class="dropdown-item" href="#">Paramètres</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li th:if="${isAdmin}"><a class="dropdown-item" th:href="@{/dashboard}">Administration</a></li>

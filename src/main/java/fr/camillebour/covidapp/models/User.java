@@ -1,6 +1,7 @@
 package fr.camillebour.covidapp.models;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -27,6 +28,9 @@ public class User {
 
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
+
+    @Column(name = "birthdate")
+    private Date birthdate;
 
     @Column(name = "enabled")
     private boolean enabled;
@@ -179,5 +183,13 @@ public class User {
 
     public boolean hasRequestFrom(User u) {
         return this.friendRequests.contains(u);
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
     }
 }
