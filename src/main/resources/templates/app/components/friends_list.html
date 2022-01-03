@@ -1,5 +1,5 @@
 <div th:fragment="friends_list">
-    <h2>Friends (<span th:text="${#lists.size(currentUser.getFriends())}"></span>)</h2>
+    <h2>Mes amis (<span th:text="${#lists.size(currentUser.getFriends())}"></span>)</h2>
     <div class="container text-left" style="width: 50%">
         <th:block th:with="colCount=${10}">
             <div th:each="r : ${#numbers.sequence(0, currentUser.getFriends().size(), colCount)}" class="row">
