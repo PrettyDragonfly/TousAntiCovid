@@ -34,8 +34,7 @@
             <div class="form-group row">
                 <label class="col-4 col-form-label">Date de naissance: </label>
                 <div class="col-8">
-                    <input type="date" id="birthdate" name="user_birthdate"
-                           value="<?php echo date('Y-m-d'); ?>"
+                    <input type="date"  th:field="*{birthdate}"
                            min="1900-01-01" max="2021-01-01">
                 </div>
             </div>
