@@ -24,9 +24,8 @@ public class Activity{
     @Column(nullable = false, unique = true, length = 100)
     private String denomination;
 
-    @Column(nullable = false, unique = true, length = 10)
-    public static final DateTimeFormat.ISO date;
-
+    @Column(nullable=false, unique = true, length = 50)
+    private String name;
 
     public Long getId() {
         return id;
@@ -36,11 +35,8 @@ public class Activity{
         this.id = id;
     }
 
-    public String getDenomination() {
-        return denomination;
-    }
+    public String getName(){ return name;}
 
-    public void setDenomination(String denomination) {
-        this.denomination = denomination;
-    }
+    public void setName(String name){ this.name = name; }
+
 }
