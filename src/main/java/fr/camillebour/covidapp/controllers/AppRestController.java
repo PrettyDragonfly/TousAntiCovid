@@ -9,13 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/app/api/v1")
+@RequestMapping("/api/v1")
 public class AppRestController {
 
     @Autowired
@@ -99,6 +102,30 @@ public class AppRestController {
             );
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/users/me/edit")
+    public ModelAndView editCurrentUserProfile(Authentication authentication, @ModelAttribute User userInfo, BindingResult result, ModelMap model) {
+
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        // Getting user from repo and updating fields one by one
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+
+        currentUser.setFirstName(userInfo.getFirstName());
+        currentUser.setLastName(userInfo.getLastName());
+        currentUser.setEmail(userInfo.getEmail());
+        currentUser.setBirthdate(userInfo.getBirthdate());
+        userRepo.save(currentUser);
+
+        return new ModelAndView("redirect:/app/users/me");
     }
 
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {

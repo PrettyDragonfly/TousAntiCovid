@@ -34,17 +34,37 @@ public class AppController {
         return "app/index";
     }
 
-    @GetMapping("/app/profile/me")
+    @GetMapping("/app/users/me")
     public String appCurrentUserProfile(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findCustomId(userDetails.getUserId());
-
-        System.out.println("Current user # friend request: " + currentUser.getFriendRequests().toArray().length);
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
 
         return "app/current_user_profile";
+    }
+
+    @GetMapping("/app/users/me/edit")
+    public String appCurrentUserProfileEdit(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+
+        return "app/current_user_profile_edit";
+    }
+
+    @GetMapping("/app/users/me/friends")
+    public String appCurrentUserFriends(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+
+        return "app/current_user_friends";
     }
 
     @GetMapping("/app/user/{id}")
