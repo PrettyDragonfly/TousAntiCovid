@@ -101,11 +101,11 @@ public class AppController {
     }
 
     @GetMapping("/app/users/search")
-    public String appUsersSearch(Authentication authentication, Model model, @RequestParam(required = true) String searchTerm) {
+    public String appUsersSearch(Authentication authentication, Model model, @RequestParam(required = true) String search) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = getCurrentUserFromUserDetails(currentUserDetails);
 
-        Collection<User> allMatchingUsers = userRepo.findMatch(searchTerm);
+        Collection<User> allMatchingUsers = userRepo.findMatch(search);
         allMatchingUsers.remove(currentUser);
 
         model.addAttribute("currentUser", currentUser);
