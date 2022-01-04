@@ -1,31 +1,45 @@
 package fr.camillebour.covidapp.models;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.transaction.Transactional;
-import java.util.Arrays;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+@Entity
+@Table(name = "activity")
 public class Activity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String denomination;
-
     @Column(nullable=false, unique = true, length = 50)
     private String name;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    @ManyToMany
+    @JoinTable(
+            name = "activity_participants",
+            joinColumns = @JoinColumn(
+                    name = "activity_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id")
+    )
+    private Set<User> participants;
 
     public Long getId() {
         return id;
@@ -39,4 +53,35 @@ public class Activity{
 
     public void setName(String name){ this.name = name; }
 
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Set<User> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(HashSet<User> participants) {
+        this.participants = participants;
+    }
 }

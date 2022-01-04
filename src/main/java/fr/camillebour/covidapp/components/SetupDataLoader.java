@@ -1,11 +1,8 @@
 package fr.camillebour.covidapp.components;
 
-import fr.camillebour.covidapp.models.Privilege;
-import fr.camillebour.covidapp.models.Role;
-import fr.camillebour.covidapp.models.User;
-import fr.camillebour.covidapp.repositories.PrivilegeRepository;
-import fr.camillebour.covidapp.repositories.RoleRepository;
-import fr.camillebour.covidapp.repositories.UserRepository;
+import fr.camillebour.covidapp.models.*;
+import fr.camillebour.covidapp.repositories.*;
+import org.hibernate.type.LocalDateTimeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,11 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -26,6 +24,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
+    private ActivityRepository activityRepository;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -103,11 +107,55 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user3.addFriend(user2);
         user2.addFriend(user3);
 
+        Location location1 = new Location();
+        location1.setAddress("Place Stanislas, Nancy, Lorraine, Grand Est, France");
+        location1.setDenomination("Place Stanislas");
+        location1.setGPSCoordinates("48.6935244,6.1832861");
+
+        Location location2 = new Location();
+        location2.setAddress("59 Rue des Ponts, 54100 Nancy, France");
+        location2.setDenomination("Bar à papa");
+        location2.setGPSCoordinates("48.68663459873369,6.183320423893477");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        HashSet<User> activity1Participants = new HashSet<>();
+        activity1Participants.add(user1);
+        activity1Participants.add(user3);
+        activity1Participants.add(adminUser);
+
+        Activity activity1 = new Activity();
+        activity1.setName("Soirée bières à volonté");
+        activity1.setLocation(location1);
+        activity1.setStartDate(LocalDateTime.parse("2022-01-03 19:00", formatter));
+        activity1.setEndDate(LocalDateTime.parse("2022-01-03 22:00", formatter));
+        activity1.setParticipants(activity1Participants);
+
+        HashSet<User> activity2Participants = new HashSet<>();
+        activity2Participants.add(user2);
+        activity2Participants.add(regularUser);
+        activity2Participants.add(user3);
+
+        Activity activity2 = new Activity();
+        activity2.setName("Soirée carte chez Jojo");
+        activity2.setLocation(location2);
+        activity2.setStartDate(LocalDateTime.parse("2022-01-05 20:00", formatter));
+        activity2.setEndDate(LocalDateTime.parse("2022-01-03 23:30", formatter));
+        activity2.setParticipants(activity2Participants);
+
+        locationRepository.save(location1);
+        locationRepository.save(location2);
+
+        activityRepository.save(activity1);
+        activityRepository.save(activity2);
+
         userRepository.save(adminUser);
         userRepository.save(regularUser);
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
+
+
 
         alreadySetup = true;
     }

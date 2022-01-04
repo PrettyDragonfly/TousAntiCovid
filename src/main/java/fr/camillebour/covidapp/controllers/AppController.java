@@ -1,7 +1,9 @@
 package fr.camillebour.covidapp.controllers;
 
+import fr.camillebour.covidapp.models.Activity;
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
 import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.repositories.ActivityRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -22,6 +25,9 @@ public class AppController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private ActivityRepository activityRepo;
 
     @GetMapping("/app")
     public String appHome(Authentication authentication, Model model) {
@@ -109,6 +115,22 @@ public class AppController {
         allMatchingUsers.forEach(u -> System.out.println("User: " + u.getFullName() + " has " + (long) u.getFriendRequests().size() + " friend requests"));
 
         return "app/users_search";
+    }
+
+    @GetMapping("/app/events")
+    public String appEvents(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        List<Activity> allEvents = activityRepo.findAll();
+        List<Activity> userEvents = activityRepo.getActivitiesForUser(currentUser);
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+        model.addAttribute("allEvents", allEvents);
+        model.addAttribute("userEvents", userEvents);
+
+        return "app/events";
     }
 
 //    @GetMapping("/app/users")

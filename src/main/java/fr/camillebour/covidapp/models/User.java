@@ -6,12 +6,9 @@ import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -77,6 +74,16 @@ public class User {
             )
     )
     private Collection<User> friendRequests;
+
+    @ManyToMany
+    @JoinTable(
+            name = "activity_participants",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "activity_id", referencedColumnName = "id")
+    )
+    private Set<Activity> activities;
 
     public Long getId() {
         return id;
@@ -194,6 +201,10 @@ public class User {
         return this.friendRequests.contains(u);
     }
 
+    public boolean participateInActivity(Activity a) {
+        return this.activities.contains(a);
+    }
+
     public LocalDate getBirthdate() {
         return birthdate;
     }
@@ -221,5 +232,13 @@ public class User {
         } else {
             return 0;
         }
+    }
+
+    public Set<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(Set<Activity> activities) {
+        this.activities = activities;
     }
 }

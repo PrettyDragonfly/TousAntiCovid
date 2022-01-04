@@ -1,20 +1,9 @@
 package fr.camillebour.covidapp.models;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import javax.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
+@Entity
+@Table(name = "location")
 public class Location{
 
     @Id
@@ -25,10 +14,10 @@ public class Location{
     private String denomination;
 
     @Column(nullable = false, unique = true, length = 200)
-    private String adress;
+    private String address;
 
-    @Column(nullable = true, unique = true, length = 100)
-    private String gps;
+    @Column(unique = true, length = 100)
+    private String gps_coordinates;
 
     public Long getId() {
         return id;
@@ -46,16 +35,16 @@ public class Location{
         this.denomination = denomination;
     }
 
-    public String getAdress() { return adress; }
+    public String getAddress() { return address; }
 
-    public void setAdress(String adress){
-        this.adress = adress;
+    public void setAddress(String address){
+        this.address = address;
     }
 
-    public String getGPS() { return gps; }
+    public String getGPS() { return gps_coordinates; }
 
-    public void setGPS(String gps){
-        this.gps = gps;
+    public void setGPSCoordinates(String gps){
+        this.gps_coordinates = gps;
     }
 
 
