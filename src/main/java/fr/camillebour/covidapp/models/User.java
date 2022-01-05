@@ -145,6 +145,14 @@ public class User {
         this.roles = roles;
     }
 
+    public boolean hasRole(String roleName) {
+        return this.roles.stream().anyMatch(r -> r.getName().equals(roleName));
+    }
+
+    public void addRole(Role r) {
+        this.roles.add(r);
+    }
+
     public Collection<User> getFriends() {
         return friends;
     }
@@ -241,4 +249,5 @@ public class User {
     public void setActivities(Set<Activity> activities) {
         this.activities = activities;
     }
+
 }

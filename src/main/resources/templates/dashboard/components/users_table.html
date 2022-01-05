@@ -1,0 +1,25 @@
+<div th:fragment="users_table" class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th scope="col">Mail</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">Date de naissance</th>
+            <th scope="col"># Amis</th>
+            <th scope="col">Role</th>
+        </tr>
+        </thead>
+        <tbody th:each="user: ${users}">
+        <tr>
+            <td th:text="${user.getEmail()}"></td>
+            <td th:text="${user.getFirstName()}"></td>
+            <td th:text="${user.getLastName()}"></td>
+            <td th:text="${user.getBirthdate()}"></td>
+            <td th:text="${user.getFriends().size()}"></td>
+            <td th:if="${user.hasRole('ROLE_ADMIN')}" th:text="ADMIN"></td>
+            <td th:if="${!user.hasRole('ROLE_ADMIN')}"><a href="#" th:attr="onclick=|promoteAdmin(${user.getId()});return false;|">Passer administrateur</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

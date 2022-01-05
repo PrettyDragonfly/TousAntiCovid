@@ -1,0 +1,50 @@
+<div th:fragment="sidebar(activeId)">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 1} ? active :  ''" aria-current="page" th:href="@{/dashboard}">
+                        <span data-feather="home"></span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 2} ? active :  ''" th:href="@{/dashboard/users}">
+                        <span data-feather="users"></span>
+                        Utilisateurs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 3} ? active :  ''" th:href="@{/dashboard/events}">
+                        <span data-feather="calendar"></span>
+                        Evénements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 4} ? active :  ''" th:href="@{/dashboard/locations}">
+                        <span data-feather="map"></span>
+                        Lieux
+                    </a>
+                </li>
+            </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Statistiques</span>
+            </h6>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 5} ? active :  ''" href="#">
+                        <span data-feather="share-2"></span>
+                        Graphes des utilisateurs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeId == 6} ? active :  ''" href="#">
+                        <span data-feather="trending-up"></span>
+                        Infections
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
