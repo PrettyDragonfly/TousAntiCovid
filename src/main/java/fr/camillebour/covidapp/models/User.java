@@ -38,6 +38,9 @@ public class User {
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
+    @Column(name = "is_positive")
+    private boolean positiveToCovid;
+
     @Column(name = "enabled")
     private boolean enabled;
 
@@ -250,4 +253,11 @@ public class User {
         this.activities = activities;
     }
 
+    public boolean isPositiveToCovid() {
+        return positiveToCovid;
+    }
+
+    public void setPositiveToCovid(boolean positiveToCovid) {
+        this.positiveToCovid = positiveToCovid;
+    }
 }

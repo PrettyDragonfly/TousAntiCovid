@@ -33,7 +33,7 @@
             </h6>
             <ul class="nav flex-column mb-2">
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeId == 5} ? active :  ''" href="#">
+                    <a class="nav-link" th:classappend="${activeId == 5} ? active :  ''" th:href="@{/dashboard/stats/users-graph}">
                         <span data-feather="share-2"></span>
                         Graphes des utilisateurs
                     </a>
