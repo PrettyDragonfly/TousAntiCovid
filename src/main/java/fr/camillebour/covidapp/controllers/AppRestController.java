@@ -33,11 +33,9 @@ public class AppRestController {
     private UserRepository userRepo;
 
     @Autowired
-<<<<<<< HEAD
     private ExposureNotificationRepository notificationRepo;
-=======
+
     private ActivityRepository activityRepo;
->>>>>>> dev_cam2
 
     @GetMapping("/request-friend/{id}")
     @Transactional(isolation = Isolation.READ_COMMITTED)
