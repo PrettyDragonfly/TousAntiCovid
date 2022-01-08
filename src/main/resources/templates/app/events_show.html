@@ -25,8 +25,12 @@
             <div th:if="${activity.getLocation() != null}"><strong>Lieu</strong> <span th:text="${activity.getLocation().getDenomination()}"></span></div>
             <div th:if="${activity.getLocation() == null}"><strong>Lieu</strong> N/R</div>
 
-            <!--CHANGE THE REF /!-->
-            <a th:href="@{/dashboard/events/{id}/edit(id=${activity.getId()})}"  class="btn btn-info">Participer</a>
+            <div th:if="${!currentUser.participateInActivity(activity)}">
+                <a href="#" th:attr="onclick=|joinEvent(${activity.getId()});return false;|" class="btn btn-info">Participer</a>
+            </div>
+            <div th:if="${currentUser.participateInActivity(activity)}">
+                <a href="#" th:attr="onclick=|leaveEvent(${activity.getId()});return false;|" class="btn btn-info">Ne plus participer</a>
+            </div>
         </main>
     </div>
 </div>
@@ -39,7 +43,7 @@
         integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
         crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="/js/dashboard.js"></script>
+<script type="text/javascript" src="/js/covidapp.js"></script>
 </body>
 
 </html>

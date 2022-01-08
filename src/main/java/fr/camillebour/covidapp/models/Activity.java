@@ -84,4 +84,12 @@ public class Activity{
     public void setParticipants(HashSet<User> participants) {
         this.participants = participants;
     }
+
+    public void addParticipant(User u) {
+        participants.add(u);
+    }
+
+    public void removeParticipant(User u) {
+        participants.remove(u);
+    }
 }
