@@ -128,6 +128,26 @@ public class AppRestController {
         return new ModelAndView("redirect:/app/users/me");
     }
 
+
+    @GetMapping("/users/me/positive")
+    public ResponseEntity makeCurrentUserPositive(Authentication authentication) {
+        // Getting user from repo and updating fields one by one
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+
+        if (currentUser.isPositiveToCovid()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "the current user is already positive to covid"
+            );
+        }
+
+        currentUser.setPositiveToCovid(true);
+        userRepo.save(currentUser);
+
+        return ResponseEntity.ok().build();
+    }
+
+
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             return true;

@@ -12,3 +12,8 @@ async function rejectFriendRequest(userId) {
     await jQuery.get("/api/v1/friend-request/" + userId + "/reject")
     window.location.reload();
 }
+
+async function makeCurrentUserPositive() {
+    await jQuery.get("/api/v1/users/me/positive")
+    window.location.reload();
+}

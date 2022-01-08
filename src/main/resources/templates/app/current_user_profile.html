@@ -24,8 +24,8 @@
                             <h4 th:text="${currentUser.getFirstName()}"></h4>
                             <p class="text-secondary mb-1" th:text="${currentUser.getAge()} + ' ans'"></p>
                             <p class="text-muted font-size-sm"  th:text="${currentUser.getEmail()}"></p>
-<!--                            <button class="btn btn-primary">Follow</button>-->
-<!--                            <button class="btn btn-outline-primary">Message</button>-->
+                            <button th:if="${!currentUser.isPositiveToCovid()}" class="btn btn-danger" th:attr="onclick=|makeCurrentUserPositive();return false;|">Positif(ve) au COVID</button>
+                            <button th:if="${currentUser.isPositiveToCovid()}" disabled class="btn btn-danger">Positif(ve) au COVID</button>
                         </div>
                     </div>
                 </div>
