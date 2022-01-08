@@ -91,4 +91,12 @@ public class Activity{
         LocalDateTime currentDatetime = LocalDateTime.now();
         return currentDatetime.isAfter(this.endDate);
     }
+
+    public void addParticipant(User u) {
+        participants.add(u);
+    }
+
+    public void removeParticipant(User u) {
+        participants.remove(u);
+    }
 }

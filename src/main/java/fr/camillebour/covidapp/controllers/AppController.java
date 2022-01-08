@@ -145,6 +145,27 @@ public class AppController {
         return "app/events";
     }
 
+    @GetMapping("/app/events/{id}")
+    public String appActivitiesShow(Authentication authentication, Model model, @PathVariable Long id) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+
+        Optional<Activity> act = activityRepo.findById(id);
+        if (act.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "activity not found"
+            );
+        }
+
+        model.addAttribute("activity", act.get());
+
+        //TO CHANGE
+        return "app/events_show";
+    }
+
 //    @GetMapping("/app/users")
 //    public String appUsers(Authentication authentication, Model model) {
 //        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
