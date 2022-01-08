@@ -17,7 +17,7 @@ public class Location{
     private String address;
 
     @Column(unique = true, length = 100)
-    private String gps_coordinates;
+    private String gpsCoordinates;
 
     public Long getId() {
         return id;
@@ -41,12 +41,10 @@ public class Location{
         this.address = address;
     }
 
-    public String getGPS() { return gps_coordinates; }
+    public String getGPSCoordinates() { return gpsCoordinates; }
 
     public void setGPSCoordinates(String gps){
-        this.gps_coordinates = gps;
+        this.gpsCoordinates = gps;
     }
-
-
 
 }

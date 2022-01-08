@@ -1,8 +1,10 @@
 package fr.camillebour.covidapp.controllers;
 
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
+import fr.camillebour.covidapp.models.Location;
 import fr.camillebour.covidapp.models.Role;
 import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.RoleRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class DashboardRestController {
     @Autowired
     private RoleRepository roleRepo;
 
+    @Autowired
+    private LocationRepository locationsRepo;
+
     @GetMapping("/promote/{id}")
     public ResponseEntity promoteAdmin(@PathVariable Long id) {
         Optional<User> userToPromote = userRepo.findById(id);
@@ -49,5 +54,46 @@ public class DashboardRestController {
             );
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/locations/create")
+    public ModelAndView createLocation(@ModelAttribute Location newLocation, BindingResult result, ModelMap model) {
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        locationsRepo.save(newLocation);
+        return new ModelAndView("redirect:/dashboard/locations/" + newLocation.getId());
+    }
+
+    @PostMapping("/locations/{id}/edit")
+    public ModelAndView editLocation(@PathVariable Long id, @ModelAttribute Location locationInfo, BindingResult result, ModelMap model) {
+
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        Optional<Location> loc = locationsRepo.findById(id);
+        if (loc.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "location not found"
+            );
+        }
+
+        Location location = loc.get();
+        location.setDenomination(locationInfo.getDenomination());
+        location.setAddress(locationInfo.getAddress());
+        location.setGPSCoordinates(locationInfo.getGPSCoordinates());
+        locationsRepo.save(location);
+
+        return new ModelAndView("redirect:/dashboard/locations/" + id);
     }
 }

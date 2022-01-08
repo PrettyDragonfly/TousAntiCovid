@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
+import fr.camillebour.covidapp.models.Location;
 import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import fr.camillebour.covidapp.utils.D3Graph;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +16,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class DashboardController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private LocationRepository locationRepo;
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
@@ -33,7 +40,7 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", allUsers);
 
-        return "dashboard/index";
+        return "dashboard/locations/index";
     }
 
     @GetMapping("/dashboard/users")
@@ -45,10 +52,64 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", allUsers);
 
-        return "dashboard/users";
+        return "dashboard/locations/users";
     }
 
-    @GetMapping("/dashboard/stats/users-graph")
+    @GetMapping("/dashboard/locations")
+    public String dashboardLocations(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+        List<Location> allLocations = locationRepo.findAll();
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("locations", allLocations);
+
+        return "dashboard/locations/locations";
+    }
+
+    @GetMapping("/dashboard/locations/{id}")
+    public String dashboardLocationsShow(Authentication authentication, Model model, @PathVariable Long id) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+        Optional<Location> location = locationRepo.findById(id);
+
+        if (location.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "location not found"
+            );
+        }
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("location", location.get());
+
+        return "dashboard/locations/location_show";
+    }
+
+    @GetMapping("/dashboard/locations/create")
+    public String dashboardLocationsCreate(Model model) {
+        model.addAttribute("location", new Location());
+        return "dashboard/locations/location_create";
+    }
+
+    @GetMapping("/dashboard/locations/{id}/edit")
+    public String dashboardLocationsEdit(Authentication authentication, Model model, @PathVariable Long id) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+        Optional<Location> location = locationRepo.findById(id);
+
+        if (location.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "location not found"
+            );
+        }
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("location", location.get());
+
+        return "dashboard/locations/location_edit";
+    }
+
+    @GetMapping("/locations/stats/users-graph")
     public String dashboardStatsUsersGraph(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findCustomId(userDetails.getUserId());
@@ -71,6 +132,6 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("usersGraph", graphString);
 
-        return "dashboard/users_graph";
+        return "dashboard/locations/users_graph";
     }
 }
