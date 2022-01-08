@@ -9,8 +9,6 @@ Common
 App
 ---
 
-- Add a way for user to say they've tested positive
-- Add notifications systems
 - Add event creation capabilities (edit/deletion left to admin only?)
 - Add location creation capabilities (edit/deletion left to admin only?)
 
