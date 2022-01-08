@@ -4,11 +4,8 @@ import fr.camillebour.covidapp.models.Activity;
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
 import fr.camillebour.covidapp.models.ExposureNotification;
 import fr.camillebour.covidapp.models.User;
-<<<<<<< HEAD
 import fr.camillebour.covidapp.repositories.ExposureNotificationRepository;
-=======
 import fr.camillebour.covidapp.repositories.ActivityRepository;
->>>>>>> dev_cam2
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
