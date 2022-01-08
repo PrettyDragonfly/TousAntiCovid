@@ -45,7 +45,7 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", allUsers);
 
-        return "dashboard/locations/index";
+        return "dashboard/index";
     }
 
     @GetMapping("/dashboard/users")
@@ -57,7 +57,7 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("users", allUsers);
 
-        return "dashboard/locations/users";
+        return "dashboard/users";
     }
 
     @GetMapping("/dashboard/locations")
@@ -161,7 +161,7 @@ public class DashboardController {
     }
 
 
-    @GetMapping("/locations/stats/users-graph")
+    @GetMapping("/dashboard/stats/users-graph")
     public String dashboardStatsUsersGraph(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findCustomId(userDetails.getUserId());
@@ -184,7 +184,7 @@ public class DashboardController {
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("usersGraph", graphString);
 
-        return "dashboard/locations/users_graph";
+        return "dashboard/users_graph";
     }
 
 }
