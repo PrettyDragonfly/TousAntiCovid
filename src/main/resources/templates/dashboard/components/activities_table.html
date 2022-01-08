@@ -1,0 +1,21 @@
+<div th:fragment="activities_table" class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Start</th>
+            <th scope="col">End</th>
+            <th scope="col">Lieu</th>
+        </tr>
+        </thead>
+        <tbody th:each="activity: ${activities}">
+        <tr>
+            <td><a th:href="@{/dashboard/events/{id}(id=${activity.getId()})}" th:text="${activity.getName()}"></a></td>
+            <td th:text="${activity.getStartDate()}"></td>
+            <td th:text="${activity.getEndDate()}"></td>
+            <td th:if="${activity.getLocation() != null}"><a th:href="@{/dashboard/locations/{id}(id=${activity.getLocation().getId()})}" th:text="${activity.getLocation().getDenomination()}"></a></td>
+            <td th:if="${activity.getLocation() == null}">N/R</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

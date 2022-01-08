@@ -1,9 +1,7 @@
 package fr.camillebour.covidapp.controllers;
 
-import fr.camillebour.covidapp.models.CovidAppUserDetails;
-import fr.camillebour.covidapp.models.Location;
-import fr.camillebour.covidapp.models.Role;
-import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.models.*;
+import fr.camillebour.covidapp.repositories.ActivityRepository;
 import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.RoleRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
@@ -14,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +32,9 @@ public class DashboardRestController {
 
     @Autowired
     private LocationRepository locationsRepo;
+
+    @Autowired
+    private ActivityRepository activityRepo;
 
     @GetMapping("/promote/{id}")
     public ResponseEntity promoteAdmin(@PathVariable Long id) {
@@ -95,5 +97,67 @@ public class DashboardRestController {
         locationsRepo.save(location);
 
         return new ModelAndView("redirect:/dashboard/locations/" + id);
+    }
+
+    @PostMapping("/events/create")
+    public ModelAndView createActivities(@ModelAttribute Activity newActivity, BindingResult result, ModelMap model,  @RequestBody MultiValueMap<String, String> formData) {
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        String lData = formData.getFirst("location");
+        if (lData == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "could not get location"
+            );
+        }
+
+        Long lId = Long.parseLong(lData);
+        Location location = locationsRepo.getById(lId);
+        newActivity.setLocation(location);
+        activityRepo.save(newActivity);
+
+        return new ModelAndView("redirect:/dashboard/events/" + newActivity.getId());
+    }
+
+    @PostMapping("/events/{id}/edit")
+    public ModelAndView editActivities(@ModelAttribute Activity activityInfo, @PathVariable Long id,  BindingResult result, ModelMap model, @RequestBody MultiValueMap<String, String> formData) {
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        Optional<Activity> act = activityRepo.findById(id);
+        if (act.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "activity not found"
+            );
+        }
+
+        String lData = formData.getFirst("location");
+        if (lData == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "could not get location"
+            );
+        }
+
+        Long lId = Long.parseLong(lData);
+        Location location = locationsRepo.getById(lId);
+
+        Activity a = act.get();
+        a.setName(activityInfo.getName());
+        a.setStartDate(activityInfo.getStartDate());
+        a.setEndDate(activityInfo.getEndDate());
+        a.setLocation(location);
+        activityRepo.save(a);
+
+        return new ModelAndView("redirect:/dashboard/events/" + a.getId());
     }
 }

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.camillebour.covidapp.models.Activity;
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
 import fr.camillebour.covidapp.models.Location;
 import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.repositories.ActivityRepository;
 import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import fr.camillebour.covidapp.utils.D3Graph;
@@ -27,6 +29,9 @@ public class DashboardController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private ActivityRepository activityRepo;
 
     @Autowired
     private LocationRepository locationRepo;
@@ -109,6 +114,53 @@ public class DashboardController {
         return "dashboard/locations/location_edit";
     }
 
+    @GetMapping("/dashboard/events")
+    public String dashboardActivities(Model model) {
+        List<Activity> allActivities = activityRepo.findAll();
+        model.addAttribute("activities", allActivities);
+
+        return "dashboard/activities/activities";
+    }
+
+    @GetMapping("/dashboard/events/create")
+    public String dashboardActivitiesCreate(Model model) {
+        List<Location> allLocations = locationRepo.findAll();
+        model.addAttribute("locations", allLocations);
+        return "dashboard/activities/activities_create";
+    }
+
+    @GetMapping("/dashboard/events/{id}")
+    public String dashboardActivitiesShow(Model model, @PathVariable Long id) {
+        Optional<Activity> act = activityRepo.findById(id);
+        if (act.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "activity not found"
+            );
+        }
+
+        model.addAttribute("activity", act.get());
+
+        return "dashboard/activities/activities_show";
+    }
+
+    @GetMapping("/dashboard/events/{id}/edit")
+    public String dashboardActivitiesEdit(Model model, @PathVariable Long id) {
+        Optional<Activity> act = activityRepo.findById(id);
+        if (act.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "activity not found"
+            );
+        }
+
+        List<Location> allLocations = locationRepo.findAll();
+
+        model.addAttribute("activity", act.get());
+        model.addAttribute("locations", allLocations);
+
+        return "dashboard/activities/activities_edit";
+    }
+
+
     @GetMapping("/locations/stats/users-graph")
     public String dashboardStatsUsersGraph(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
@@ -134,4 +186,5 @@ public class DashboardController {
 
         return "dashboard/locations/users_graph";
     }
+
 }
