@@ -19,4 +19,4 @@ Dashboard
 
 - Add user create/edit/delete capabilities 
 - Add event show/create/edit/delete capabilities 
-- Add location show/create/edit/delete capabilities 
+- Add location /delete capabilities 
