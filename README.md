@@ -33,3 +33,7 @@ Bonus
 -----
 
 - Add statistics on infection numbers in dashboard (using basic cards)
+- Change colors in users' graph:
+  - red: positive to covid
+  - orange: in contact
+  - blue: regular
