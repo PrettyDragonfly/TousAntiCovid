@@ -6,6 +6,13 @@ import javax.persistence.*;
 @Table(name = "exposure_notification")
 public class ExposureNotification {
 
+    public ExposureNotification() {
+    }
+
+    public ExposureNotification(String message) {
+        this.message = message;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,6 +22,7 @@ public class ExposureNotification {
 
     @Column(length = 250)
     private String message;
+
 
     public Long getId() {
         return id;

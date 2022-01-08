@@ -146,8 +146,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         activity2.setEndDate(LocalDateTime.parse("2022-01-03 23:30", formatter));
         activity2.setParticipants(activity2Participants);
 
-        ExposureNotification testNotif = new ExposureNotification();
-        testNotif.setMessage("Un de vos amis est positif à la COVID 19, veuillez vous mettre en quarantaine.");
+        ExposureNotification testNotif = new ExposureNotification("Un de vos amis est positif à la COVID 19, veuillez vous mettre en quarantaine.");
         adminUser.addNotification(testNotif);
 
         notificationRepository.save(testNotif);

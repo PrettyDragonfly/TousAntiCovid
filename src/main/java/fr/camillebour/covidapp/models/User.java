@@ -232,6 +232,9 @@ public class User {
     }
 
     public String getBirthdateString() {
+        if (this.birthdate == null) {
+            return "";
+        }
         return this.birthdate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
     }
 
@@ -282,5 +285,26 @@ public class User {
 
     public void addNotification(ExposureNotification notif) {
         this.notifications.add(notif);
+    }
+
+    public Set<User> getUserThatHaveBeenInContact() {
+        HashSet<User> contacts = new HashSet<>();
+        HashSet<User> friends = new HashSet<>(this.friends);
+        HashSet<User> contactActivities = new HashSet<>();
+
+        HashSet<Activity> passedActivities = new HashSet<>();
+        this.activities.forEach(a -> {
+            if (a.isFinished()) {
+                passedActivities.add(a);
+            }
+        });
+
+        passedActivities.forEach(a -> contactActivities.addAll(a.getParticipants()));
+        contactActivities.remove(this);
+
+        contacts.addAll(friends);
+        contacts.addAll(contactActivities);
+
+        return contacts;
     }
 }

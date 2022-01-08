@@ -3,7 +3,9 @@ package fr.camillebour.covidapp.models;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -83,5 +85,10 @@ public class Activity{
 
     public void setParticipants(HashSet<User> participants) {
         this.participants = participants;
+    }
+
+    public boolean isFinished() {
+        LocalDateTime currentDatetime = LocalDateTime.now();
+        return currentDatetime.isAfter(this.endDate);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -149,6 +150,15 @@ public class AppRestController {
         currentUser.setPositiveToCovid(true);
         userRepo.save(currentUser);
 
+        // Notify all contact
+        currentUser.getUserThatHaveBeenInContact().forEach(u -> {
+            ExposureNotification n = new ExposureNotification(
+                    "Une personne avec qui vous avez été en contact est positif à la COVID 19, veuillez vous mettre en quarantaine.");
+            notificationRepo.save(n);
+            u.addNotification(n);
+            userRepo.save(u);
+        });
+
         return ResponseEntity.ok().build();
     }
 
@@ -158,7 +168,7 @@ public class AppRestController {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
 
-        Optional<ExposureNotification> notif =  notificationRepo.findById(id);
+        Optional<ExposureNotification> notif = notificationRepo.findById(id);
 
         if (notif.isEmpty()) {
             throw new ResponseStatusException(
@@ -185,7 +195,7 @@ public class AppRestController {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
 
-        Optional<ExposureNotification> notif =  notificationRepo.findById(id);
+        Optional<ExposureNotification> notif = notificationRepo.findById(id);
 
         if (notif.isEmpty()) {
             throw new ResponseStatusException(
