@@ -1,7 +1,7 @@
 <div th:fragment="all_events_list">
     <h2>Evénements alentours</h2>
     <ul th:each="event: ${allEvents}">
-        <li th:if="${!currentUser.participateInActivity(event)}"><span th:text="${event.getName()}"></span><span
+        <li th:if="${!currentUser.participateInActivity(event)}"><a th:href="@{/app/events/{id}(id=${event.getId()})}"><span th:text="${event.getName()}"></span></a><span
                 th:text="' (' +${event.getParticipants().size()} + ' participants)'"></span></li>
     </ul>
 </div>
