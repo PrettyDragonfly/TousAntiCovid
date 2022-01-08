@@ -7,26 +7,38 @@
                 </a>
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a th:href="@{/app}" class="nav-link px-2" th:classappend="${activeId == 1} ? link-secondary :  link-dark">Accueil</a></li>
-                    <li><a th:href="@{/app/events}" class="nav-link px-2" th:classappend="${activeId == 2} ? link-secondary :  link-dark">Evénements</a></li>
-                    <li><a href="#" class="nav-link px-2" th:classappend="${activeId == 3} ? link-secondary :  link-dark">A propos</a></li>
+                    <li><a th:href="@{/app}" class="nav-link px-2"
+                           th:classappend="${activeId == 1} ? link-secondary :  link-dark">Accueil</a></li>
+                    <li><a th:href="@{/app/events}" class="nav-link px-2"
+                           th:classappend="${activeId == 2} ? link-secondary :  link-dark">Evénements</a></li>
+                    <li><a th:href="@{/app/users/me/notifications}" class="nav-link px-2"
+                           th:classappend="${activeId == 3} ? link-secondary :  link-dark">Notifications</a></li>
+                    <li><a href="#" class="nav-link px-2"
+                           th:classappend="${activeId == 4} ? link-secondary :  link-dark">A propos</a></li>
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" th:action="@{/app/users/search}">
-                    <input type="search" class="form-control" id="search" name="search" placeholder="Rechercher des amis..." aria-label="Search">
+                    <input type="search" class="form-control" id="search" name="search"
+                           placeholder="Rechercher des amis..." aria-label="Search">
                 </form>
 
                 <div class="dropdown text-end">
-                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="/img/user.png" alt="user-profile-picture" width="32" height="32" class="rounded-circle">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="/img/user.png" alt="user-profile-picture" width="32" height="32"
+                             class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser">
                         <li><a class="dropdown-item" th:href="@{/app/users/me}">Mon profil</a></li>
                         <li><a class="dropdown-item" th:href="@{/app/users/me/friends}">Amis</a></li>
                         <li><a class="dropdown-item" href="#">Paramètres</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li th:if="${isAdmin}"><a class="dropdown-item" th:href="@{/dashboard}">Administration</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" th:href="@{/logout}">Déconnexion</a></li>
                     </ul>
                 </div>

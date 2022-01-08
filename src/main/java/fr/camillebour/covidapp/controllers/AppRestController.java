@@ -1,7 +1,9 @@
 package fr.camillebour.covidapp.controllers;
 
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
+import fr.camillebour.covidapp.models.ExposureNotification;
 import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.repositories.ExposureNotificationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class AppRestController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private ExposureNotificationRepository notificationRepo;
 
     @GetMapping("/request-friend/{id}")
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -147,6 +152,59 @@ public class AppRestController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/notifications/{id}/mark-as-read")
+    public ResponseEntity markNotificationAsRead(Authentication authentication, @PathVariable Long id) {
+        // Getting user from repo and updating fields one by one
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+
+        Optional<ExposureNotification> notif =  notificationRepo.findById(id);
+
+        if (notif.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "notification not found"
+            );
+        }
+
+        if (!currentUser.getNotifications().contains(notif.get())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "notification not found"
+            );
+        }
+
+        ExposureNotification notification = notif.get();
+        notification.setOpened(true);
+        notificationRepo.save(notification);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/notifications/{id}/mark-as-unread")
+    public ResponseEntity markNotificationAsUnread(Authentication authentication, @PathVariable Long id) {
+        // Getting user from repo and updating fields one by one
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+
+        Optional<ExposureNotification> notif =  notificationRepo.findById(id);
+
+        if (notif.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "notification not found"
+            );
+        }
+
+        if (!currentUser.getNotifications().contains(notif.get())) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "notification not found"
+            );
+        }
+
+        ExposureNotification notification = notif.get();
+        notification.setOpened(false);
+        notificationRepo.save(notification);
+
+        return ResponseEntity.ok().build();
+    }
 
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {

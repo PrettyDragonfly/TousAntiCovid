@@ -1,0 +1,15 @@
+<div th:fragment="notifications_list">
+    <h1>Notifications (<span th:text="${currentUser.getNotifications().size()}"></span>)</h1>
+    <div th:if="${currentUser.getNotifications().size() > 0}">
+        <ul th:each="notification : ${notifications}">
+            <li><span th:text="${notification.getMessage()}"></span>
+                <a th:if="${!notification.isOpened()}" href="#"
+                   th:attr="onclick=|markNotificationAsRead(${notification.getId()});return false;|">Marquer comme lue</a>
+                <a th:if="${notification.isOpened()}" href="#"
+                   th:attr="onclick=|markNotificationAsUnread(${notification.getId()});return false;|">Marquer comme non lue</a></li>
+        </ul>
+    </div>
+    <div th:if="${currentUser.getNotifications().size() == 0}">
+        <em>Pas de notification</em>
+    </div>
+</div>

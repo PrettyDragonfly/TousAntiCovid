@@ -16,6 +16,7 @@ public class User {
 
     public User() {
         this.friends = new ArrayList<User>();
+        this.notifications = new HashSet<ExposureNotification>();
     }
 
     @Id
@@ -87,6 +88,16 @@ public class User {
                     name = "activity_id", referencedColumnName = "id")
     )
     private Set<Activity> activities;
+
+    @OneToMany
+    @JoinTable(
+            name = "user_notifications",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "notification_id", referencedColumnName = "id")
+    )
+    private Set<ExposureNotification> notifications;
 
     public Long getId() {
         return id;
@@ -259,5 +270,17 @@ public class User {
 
     public void setPositiveToCovid(boolean positiveToCovid) {
         this.positiveToCovid = positiveToCovid;
+    }
+
+    public Set<ExposureNotification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Set<ExposureNotification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public void addNotification(ExposureNotification notif) {
+        this.notifications.add(notif);
     }
 }

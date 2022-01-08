@@ -38,6 +38,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private PrivilegeRepository privilegeRepository;
 
     @Autowired
+    private ExposureNotificationRepository notificationRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -143,6 +146,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         activity2.setEndDate(LocalDateTime.parse("2022-01-03 23:30", formatter));
         activity2.setParticipants(activity2Participants);
 
+        ExposureNotification testNotif = new ExposureNotification();
+        testNotif.setMessage("Un de vos amis est positif à la COVID 19, veuillez vous mettre en quarantaine.");
+        adminUser.addNotification(testNotif);
+
+        notificationRepository.save(testNotif);
+
         locationRepository.save(location1);
         locationRepository.save(location2);
 
@@ -154,8 +163,6 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
-
-
 
         alreadySetup = true;
     }

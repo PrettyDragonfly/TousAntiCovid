@@ -17,3 +17,13 @@ async function makeCurrentUserPositive() {
     await jQuery.get("/api/v1/users/me/positive")
     window.location.reload();
 }
+
+async function markNotificationAsRead(id) {
+    await jQuery.get("/api/v1/notifications/" + id + "/mark-as-read")
+    window.location.reload();
+}
+
+async function markNotificationAsUnread(id) {
+    await jQuery.get("/api/v1/notifications/" + id + "/mark-as-unread")
+    window.location.reload();
+}

@@ -73,6 +73,18 @@ public class AppController {
         return "app/current_user_friends";
     }
 
+    @GetMapping("/app/users/me/notifications")
+    public String appCurrentUserNotification(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+        model.addAttribute("notifications", currentUser.getNotifications());
+
+        return "app/current_user_notifications";
+    }
+
     @GetMapping("/app/user/{id}")
     public ModelAndView appUserProfile(Authentication authentication, Model model, @PathVariable Long id) {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
