@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
@@ -116,25 +117,23 @@ public class DashboardController {
 
     @GetMapping("/dashboard/locations/{id}/delete")
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ResponseEntity deleteLocation(Authentication authentication, @PathVariable Long id) {
-        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
-
-        User currentUser = userRepo.findCustomId(currentUserDetails.getUserId());
-
-        //System.out.println("Current user # friend request = " + currentUser.getFriendRequests().size());
+    public ModelAndView deleteLocation(Authentication authentication, @PathVariable Long id) {
         Optional<Location> location = locationRepo.findById(id);
 
         if (location.isPresent()) {
             Location l = location.get();
             System.out.println("Location " + l.getId() + " deleted");
 
-            //locations.remove(l);
+            for (Activity a : activityRepo.getActivitiesForLocation(l)) {
+                activityRepo.delete(a);
+            }
+            locationRepo.delete(l);
         } else {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "location not found"
             );
         }
-        return ResponseEntity.ok().build();
+        return new ModelAndView("redirect:/dashboard/locations");
     }
 
     @GetMapping("/dashboard/events")
