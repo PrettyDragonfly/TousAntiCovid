@@ -6,7 +6,9 @@
                 <a th:if="${!notification.isOpened()}" href="#"
                    th:attr="onclick=|markNotificationAsRead(${notification.getId()});return false;|">Marquer comme lue</a>
                 <a th:if="${notification.isOpened()}" href="#"
-                   th:attr="onclick=|markNotificationAsUnread(${notification.getId()});return false;|">Marquer comme non lue</a></li>
+                   th:attr="onclick=|markNotificationAsUnread(${notification.getId()});return false;|">Marquer comme non lue</a>
+                <a th:if="${notification.getType() == 1}" href="#"
+                   th:href="@{/app/users/me/friends}">Voir</a></li>
         </ul>
     </div>
     <div th:if="${currentUser.getNotifications().size() == 0}">

@@ -9,8 +9,9 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(String message) {
+    public Notification(String message, int t) {
         this.message = message;
+        this.type = t;
     }
 
     @Id
@@ -23,6 +24,15 @@ public class Notification {
     @Column(length = 250)
     private String message;
 
+    private int type;
+    
+    public int getType() {
+        return type;
+    }
+    
+    public void setType(int t) {
+        type = t;
+    }
 
     public Long getId() {
         return id;

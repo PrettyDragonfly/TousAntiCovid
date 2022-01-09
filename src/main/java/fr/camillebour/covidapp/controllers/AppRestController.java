@@ -53,7 +53,7 @@ public class AppRestController {
             if (!u.hasRequestFrom(currentUser) && !u.getFriends().contains(currentUser)) {
                 System.out.println("User " + currentUser.getId() + " requested " + u.getId() + " as a friend...");
 
-                Notification n = new Notification(currentUser.getFullName() + " vous a envoyé une demande d'amitié");
+                Notification n = new Notification(currentUser.getFullName() + " vous a envoyé une demande d'amitié", 1);
                 NotificationRepo.save(n);
                 u.addNotification(n);
 
@@ -86,7 +86,7 @@ public class AppRestController {
                 currentUser.removeFriendRequestFrom(u);
                 u.addFriend(currentUser);
 
-                Notification n = new Notification(currentUser.getFullName() + " a accepté votre demande d'amitié");
+                Notification n = new Notification(currentUser.getFullName() + " a accepté votre demande d'amitié", 1);
                 NotificationRepo.save(n);
                 u.addNotification(n);
 
@@ -114,7 +114,7 @@ public class AppRestController {
                 System.out.println("User " + currentUser.getId() + " rejected " + u.getId() + " as a friend");
                 currentUser.removeFriendRequestFrom(u);
 
-                Notification n = new Notification(currentUser.getFullName() + " a refusé votre demande d'amitié");
+                Notification n = new Notification(currentUser.getFullName() + " a refusé votre demande d'amitié", 1);
                 NotificationRepo.save(n);
                 u.addNotification(n);
 
@@ -170,7 +170,7 @@ public class AppRestController {
         // Notify all contact
         currentUser.getUserThatHaveBeenInContact().forEach(u -> {
             Notification n = new Notification(
-                    "Une personne avec qui vous avez été en contact est positif à la COVID 19, veuillez vous mettre en quarantaine.");
+                    "Une personne avec qui vous avez été en contact est positif à la COVID 19, veuillez vous mettre en quarantaine.", 0);
             NotificationRepo.save(n);
             u.addNotification(n);
             userRepo.save(u);
@@ -343,7 +343,7 @@ public class AppRestController {
                 currentUser.removeFriend(f);
                 f.removeFriend(currentUser);
 
-                Notification n = new Notification(currentUser.getFullName() + " vous a supprimé(e) de ses amis");
+                Notification n = new Notification(currentUser.getFullName() + " vous a supprimé(e) de ses amis", 1);
                 NotificationRepo.save(n);
                 f.addNotification(n);
 
