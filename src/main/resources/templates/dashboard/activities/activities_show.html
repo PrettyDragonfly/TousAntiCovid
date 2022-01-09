@@ -27,6 +27,10 @@
             <div th:if="${activity.getLocation() == null}"><strong>Lieu</strong> N/R</div>
 
             <a th:href="@{/dashboard/events/{id}/edit(id=${activity.getId()})}"  class="btn btn-info">Modifier</a>
+
+            <form method="POST" th:action="'/api/v1/dashboard/events/' + ${activity.getId()} +'/delete'">
+                <input type="submit" value="Supprimer l'activitié"></input>
+            </form>
         </main>
     </div>
 </div>

@@ -4,22 +4,23 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.camillebour.covidapp.models.Activity;
-import fr.camillebour.covidapp.models.CovidAppUserDetails;
-import fr.camillebour.covidapp.models.Location;
-import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.models.*;
 import fr.camillebour.covidapp.repositories.ActivityRepository;
 import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import fr.camillebour.covidapp.utils.D3Graph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
@@ -159,7 +160,6 @@ public class DashboardController {
 
         return "dashboard/activities/activities_edit";
     }
-
 
     @GetMapping("/dashboard/stats/users-graph")
     public String dashboardStatsUsersGraph(Authentication authentication, Model model) {

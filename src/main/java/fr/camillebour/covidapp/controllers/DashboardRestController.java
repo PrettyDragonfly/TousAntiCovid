@@ -99,6 +99,27 @@ public class DashboardRestController {
         return new ModelAndView("redirect:/dashboard/locations/" + id);
     }
 
+    @PostMapping("/locations/{id}/delete")
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ModelAndView dashboardLocationDelete(Authentication authentication, @PathVariable Long id) {
+        Optional<Location> location = locationsRepo.findById(id);
+
+        if (location.isPresent()) {
+            Location l = location.get();
+            System.out.println("Location " + l.getId() + " deleted");
+
+            for (Activity a : activityRepo.getActivitiesForLocation(l)) {
+                activityRepo.delete(a);
+            }
+            locationsRepo.delete(l);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "location not found"
+            );
+        }
+        return new ModelAndView("redirect:/dashboard/locations");
+    }
+
     @PostMapping("/events/create")
     public ModelAndView createActivities(@ModelAttribute Activity newActivity, BindingResult result, ModelMap model,  @RequestBody MultiValueMap<String, String> formData) {
         if (result.hasErrors()) {
@@ -159,5 +180,23 @@ public class DashboardRestController {
         activityRepo.save(a);
 
         return new ModelAndView("redirect:/dashboard/events/" + a.getId());
+    }
+
+    @PostMapping("/events/{id}/delete")
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ModelAndView dashboardActivityDelete(Authentication authentication, @PathVariable Long id) {
+        Optional<Activity> activity = activityRepo.findById(id);
+
+        if (activity.isPresent()) {
+            Activity a = activity.get();
+            System.out.println("Activity " + a.getId() + " deleted");
+
+            activityRepo.delete(a);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Activity not found"
+            );
+        }
+        return new ModelAndView("redirect:/dashboard/events");
     }
 }

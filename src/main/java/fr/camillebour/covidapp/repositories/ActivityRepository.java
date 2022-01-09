@@ -12,4 +12,7 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query("SELECT a FROM Activity a WHERE :user MEMBER a.participants")
     List<Activity> getActivitiesForUser(@Param("user") User user);
+
+    @Query("SELECT a FROM Activity a WHERE location = :loc")
+    List<Activity> getActivitiesForLocation(@Param("loc")Location loc);
 }
