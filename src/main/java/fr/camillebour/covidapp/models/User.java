@@ -16,7 +16,7 @@ public class User {
 
     public User() {
         this.friends = new ArrayList<User>();
-        this.notifications = new HashSet<ExposureNotification>();
+        this.notifications = new HashSet<Notification>();
     }
 
     @Id
@@ -97,7 +97,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(
                     name = "notification_id", referencedColumnName = "id")
     )
-    private Set<ExposureNotification> notifications;
+    private Set<Notification> notifications;
 
     public Long getId() {
         return id;
@@ -178,6 +178,8 @@ public class User {
     public void addFriend(User user) {
         this.friends.add(user);
     }
+
+    public void deleteFriend(User user) { this.friends.remove(user); }
 
     public void removeFriend(User user) {
         this.friends.remove(user);
@@ -275,15 +277,11 @@ public class User {
         this.positiveToCovid = positiveToCovid;
     }
 
-    public Set<ExposureNotification> getNotifications() {
+    public Set<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(Set<ExposureNotification> notifications) {
-        this.notifications = notifications;
-    }
-
-    public void addNotification(ExposureNotification notif) {
+    public void addNotification(Notification notif) {
         this.notifications.add(notif);
     }
 

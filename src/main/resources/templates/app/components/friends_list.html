@@ -9,7 +9,8 @@
                         <div class="card-body">
                             <h5 class="card-title" th:text="${friend.getFullName()}"></h5>
                             <p class="card-text">Blabla</p>
-                            <a th:href="@{/app/user/{id}(id=${friend.getId()})}" class="btn btn-primary">Profile</a>
+                            <a th:href="@{/app/user/{id}(id=${friend.getId()})}" class="btn btn-primary">Profil</a>
+                            <a href="#" th:attr="onclick=|deleteFriend(${friend.getId()});return false;|">Supprimer l'ami</a>
                         </div>
                     </div>
                 </div>

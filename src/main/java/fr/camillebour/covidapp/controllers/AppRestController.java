@@ -1,10 +1,7 @@
 package fr.camillebour.covidapp.controllers;
 
 import fr.camillebour.covidapp.models.*;
-import fr.camillebour.covidapp.repositories.ExposureNotificationRepository;
-import fr.camillebour.covidapp.repositories.ActivityRepository;
-import fr.camillebour.covidapp.repositories.LocationRepository;
-import fr.camillebour.covidapp.repositories.UserRepository;
+import fr.camillebour.covidapp.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -29,7 +25,7 @@ public class AppRestController {
     private UserRepository userRepo;
 
     @Autowired
-    private ExposureNotificationRepository notificationRepo;
+    private NotificationRepository NotificationRepo;
 
     @Autowired
     private LocationRepository locationsRepo;
@@ -56,6 +52,11 @@ public class AppRestController {
 
             if (!u.hasRequestFrom(currentUser) && !u.getFriends().contains(currentUser)) {
                 System.out.println("User " + currentUser.getId() + " requested " + u.getId() + " as a friend...");
+
+                Notification n = new Notification(currentUser.getFullName() + " vous a envoyé une demande d'amitié");
+                NotificationRepo.save(n);
+                u.addNotification(n);
+
                 u.addFriendRequestFrom(currentUser);
                 userRepo.save(u);
             }
@@ -84,6 +85,11 @@ public class AppRestController {
                 currentUser.addFriend(u);
                 currentUser.removeFriendRequestFrom(u);
                 u.addFriend(currentUser);
+
+                Notification n = new Notification(currentUser.getFullName() + " a accepté votre demande d'amitié");
+                NotificationRepo.save(n);
+                u.addNotification(n);
+
                 userRepo.save(u);
                 userRepo.save(currentUser);
             }
@@ -107,6 +113,11 @@ public class AppRestController {
             if (!currentUser.getFriends().contains(u) && currentUser.getFriendRequests().contains(u)) {
                 System.out.println("User " + currentUser.getId() + " rejected " + u.getId() + " as a friend");
                 currentUser.removeFriendRequestFrom(u);
+
+                Notification n = new Notification(currentUser.getFullName() + " a refusé votre demande d'amitié");
+                NotificationRepo.save(n);
+                u.addNotification(n);
+
                 userRepo.save(currentUser);
             }
         } else {
@@ -158,9 +169,9 @@ public class AppRestController {
 
         // Notify all contact
         currentUser.getUserThatHaveBeenInContact().forEach(u -> {
-            ExposureNotification n = new ExposureNotification(
+            Notification n = new Notification(
                     "Une personne avec qui vous avez été en contact est positif à la COVID 19, veuillez vous mettre en quarantaine.");
-            notificationRepo.save(n);
+            NotificationRepo.save(n);
             u.addNotification(n);
             userRepo.save(u);
         });
@@ -174,7 +185,7 @@ public class AppRestController {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
 
-        Optional<ExposureNotification> notif = notificationRepo.findById(id);
+        Optional<Notification> notif = NotificationRepo.findById(id);
 
         if (notif.isEmpty()) {
             throw new ResponseStatusException(
@@ -188,9 +199,9 @@ public class AppRestController {
             );
         }
 
-        ExposureNotification notification = notif.get();
+        Notification notification = notif.get();
         notification.setOpened(true);
-        notificationRepo.save(notification);
+        NotificationRepo.save(notification);
 
         return ResponseEntity.ok().build();
     }
@@ -201,7 +212,7 @@ public class AppRestController {
         CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
 
-        Optional<ExposureNotification> notif = notificationRepo.findById(id);
+        Optional<Notification> notif = NotificationRepo.findById(id);
 
         if (notif.isEmpty()) {
             throw new ResponseStatusException(
@@ -215,9 +226,9 @@ public class AppRestController {
             );
         }
 
-        ExposureNotification notification = notif.get();
+        Notification notification = notif.get();
         notification.setOpened(false);
-        notificationRepo.save(notification);
+        NotificationRepo.save(notification);
 
         return ResponseEntity.ok().build();
     }
@@ -313,6 +324,38 @@ public class AppRestController {
 
         locationsRepo.save(newLocation);
         return new ModelAndView("redirect:/app/locations/" + newLocation.getId());
+    }
+
+    @GetMapping("/friends/{id}/delete")
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ResponseEntity deleteFriend(Authentication authentication, @PathVariable Long id) {
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+
+        User currentUser = userRepo.findCustomId(currentUserDetails.getUserId());
+
+        //System.out.println("Current user # friend request = " + currentUser.getFriendRequests().size());
+        Optional<User> friend = userRepo.findById(id);
+
+        if (friend.isPresent()) {
+            User f = friend.get();
+            if (currentUser.isFriendWith(f)) {
+                System.out.println("User " + currentUser.getId() + " delete " + f.getId() + " as friend");
+                currentUser.removeFriend(f);
+                f.removeFriend(currentUser);
+
+                Notification n = new Notification(currentUser.getFullName() + " vous a supprimé(e) de ses amis");
+                NotificationRepo.save(n);
+                f.addNotification(n);
+
+                userRepo.save(currentUser);
+                userRepo.save(f);
+            }
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "user not found"
+            );
+        }
+        return ResponseEntity.ok().build();
     }
 
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {

@@ -3,13 +3,13 @@ package fr.camillebour.covidapp.models;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "exposure_notification")
-public class ExposureNotification {
+@Table(name = "notification")
+public class Notification {
 
-    public ExposureNotification() {
+    public Notification() {
     }
 
-    public ExposureNotification(String message) {
+    public Notification(String message) {
         this.message = message;
     }
 

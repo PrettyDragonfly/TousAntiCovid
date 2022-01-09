@@ -37,3 +37,8 @@ async function leaveEvent(eventId) {
     await jQuery.get("/api/v1/events/" + eventId + "/leave")
     window.location.reload();
 }
+
+async function deleteFriend(friendId) {
+    await jQuery.get("/api/v1/friends/" + friendId + "/delete")
+    window.location.reload();
+}

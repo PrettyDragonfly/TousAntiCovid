@@ -2,7 +2,6 @@ package fr.camillebour.covidapp.components;
 
 import fr.camillebour.covidapp.models.*;
 import fr.camillebour.covidapp.repositories.*;
-import org.hibernate.type.LocalDateTimeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -38,7 +37,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private PrivilegeRepository privilegeRepository;
 
     @Autowired
-    private ExposureNotificationRepository notificationRepository;
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -146,7 +145,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         activity2.setEndDate(LocalDateTime.parse("2022-01-03 23:30", formatter));
         activity2.setParticipants(activity2Participants);
 
-        ExposureNotification testNotif = new ExposureNotification("Un de vos amis est positif à la COVID 19, veuillez vous mettre en quarantaine.");
+        Notification testNotif = new Notification("Un de vos amis est positif à la COVID 19, veuillez vous mettre en quarantaine.");
         adminUser.addNotification(testNotif);
 
         notificationRepository.save(testNotif);
