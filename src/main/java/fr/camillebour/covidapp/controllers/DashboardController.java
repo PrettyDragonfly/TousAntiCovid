@@ -115,27 +115,6 @@ public class DashboardController {
         return "dashboard/locations/location_edit";
     }
 
-    @GetMapping("/dashboard/locations/{id}/delete")
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public ModelAndView deleteLocation(Authentication authentication, @PathVariable Long id) {
-        Optional<Location> location = locationRepo.findById(id);
-
-        if (location.isPresent()) {
-            Location l = location.get();
-            System.out.println("Location " + l.getId() + " deleted");
-
-            for (Activity a : activityRepo.getActivitiesForLocation(l)) {
-                activityRepo.delete(a);
-            }
-            locationRepo.delete(l);
-        } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "location not found"
-            );
-        }
-        return new ModelAndView("redirect:/dashboard/locations");
-    }
-
     @GetMapping("/dashboard/events")
     public String dashboardActivities(Model model) {
         List<Activity> allActivities = activityRepo.findAll();
@@ -181,7 +160,6 @@ public class DashboardController {
 
         return "dashboard/activities/activities_edit";
     }
-
 
     @GetMapping("/dashboard/stats/users-graph")
     public String dashboardStatsUsersGraph(Authentication authentication, Model model) {

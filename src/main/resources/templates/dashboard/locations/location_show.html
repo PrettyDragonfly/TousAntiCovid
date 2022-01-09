@@ -25,7 +25,9 @@
 
             <a th:href="@{/dashboard/locations/{id}/edit(id=${location.getId()})}"  class="btn btn-info">Modifier</a>
 
-            <a href="#" th:attr="onclick=|deleteLocation(${location.getId()});return false;|">Supprimer le lieu</a>
+            <form method="POST" th:action="'/api/v1/dashboard/locations/' + ${location.getId()} +'/delete'">
+                <input type="submit" value="Supprimer le lieu"></input>
+            </form>
         </main>
     </div>
 </div>

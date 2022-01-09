@@ -28,7 +28,9 @@
 
             <a th:href="@{/dashboard/events/{id}/edit(id=${activity.getId()})}"  class="btn btn-info">Modifier</a>
 
-            <a href="#" th:attr="onclick=|deleteActivity(${activity.getId()});return false;|">Supprimer l'activité</a>
+            <form method="POST" th:action="'/api/v1/dashboard/events/' + ${activity.getId()} +'/delete'">
+                <input type="submit" value="Supprimer l'activitié"></input>
+            </form>
         </main>
     </div>
 </div>
