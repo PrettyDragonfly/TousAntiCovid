@@ -27,6 +27,8 @@
             <div th:if="${activity.getLocation() == null}"><strong>Lieu</strong> N/R</div>
 
             <a th:href="@{/dashboard/events/{id}/edit(id=${activity.getId()})}"  class="btn btn-info">Modifier</a>
+
+            <a href="#" th:attr="onclick=|deleteActivity(${activity.getId()});return false;|">Supprimer l'activité</a>
         </main>
     </div>
 </div>

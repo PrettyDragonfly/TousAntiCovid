@@ -24,6 +24,8 @@
             <div><strong>Coordonnées GPS:</strong> <span th:text="${location.getGPSCoordinates()}"></span></div>
 
             <a th:href="@{/dashboard/locations/{id}/edit(id=${location.getId()})}"  class="btn btn-info">Modifier</a>
+
+            <a href="#" th:attr="onclick=|deleteLocation(${location.getId()});return false;|">Supprimer le lieu</a>
         </main>
     </div>
 </div>
