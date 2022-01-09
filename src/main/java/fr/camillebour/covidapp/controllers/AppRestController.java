@@ -1,11 +1,9 @@
 package fr.camillebour.covidapp.controllers;
 
-import fr.camillebour.covidapp.models.Activity;
-import fr.camillebour.covidapp.models.CovidAppUserDetails;
-import fr.camillebour.covidapp.models.ExposureNotification;
-import fr.camillebour.covidapp.models.User;
+import fr.camillebour.covidapp.models.*;
 import fr.camillebour.covidapp.repositories.ExposureNotificationRepository;
 import fr.camillebour.covidapp.repositories.ActivityRepository;
+import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +31,10 @@ public class AppRestController {
     @Autowired
     private ExposureNotificationRepository notificationRepo;
 
+    @Autowired
+    private LocationRepository locationsRepo;
+
+    @Autowired
     private ActivityRepository activityRepo;
 
     @GetMapping("/request-friend/{id}")
@@ -219,6 +222,35 @@ public class AppRestController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/events/create")
+    public ModelAndView createActivities(Authentication authentication, @ModelAttribute Activity newActivity, BindingResult result, ModelMap model,  @RequestBody MultiValueMap<String, String> formData) {
+        CovidAppUserDetails currentUserDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findById(currentUserDetails.getUserId()).get();
+
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        String lData = formData.getFirst("location");
+        if (lData == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "could not get location"
+            );
+        }
+
+        Long lId = Long.parseLong(lData);
+        Location location = locationsRepo.getById(lId);
+        newActivity.setLocation(location);
+        //newActivity.addParticipant(currentUser);
+        activityRepo.save(newActivity);
+
+        return new ModelAndView("redirect:/app/events/" + newActivity.getId());
+    }
+
     @GetMapping("/events/{id}/join")
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResponseEntity joinEvent(Authentication authentication, @PathVariable Long id) {
@@ -267,6 +299,20 @@ public class AppRestController {
             );
         }
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/locations/create")
+    public ModelAndView createLocation(@ModelAttribute Location newLocation, BindingResult result, ModelMap model) {
+        if (result.hasErrors()) {
+            System.out.println("Error have occurred");
+            result.getAllErrors().forEach(e -> System.out.println("Error: " + e.toString()));
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "error occurred"
+            );
+        }
+
+        locationsRepo.save(newLocation);
+        return new ModelAndView("redirect:/app/locations/" + newLocation.getId());
     }
 
     private boolean isCurrentUserAdmin(CovidAppUserDetails userDetails) {

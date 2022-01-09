@@ -1,0 +1,5 @@
+<div th:fragment="places_list">
+    <ul th:each="location: ${locations}">
+        <li><a th:href="@{/app/locations/{id}(id=${location.getId()})}"><span th:text="${location.getDenomination()}"></span></a></li>
+    </ul>
+</div>

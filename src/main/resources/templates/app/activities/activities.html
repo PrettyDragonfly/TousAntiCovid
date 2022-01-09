@@ -11,8 +11,9 @@
 
 <div class="container" role="main">
     <h1>Evénements</h1>
-    <div th:insert="app/components/events_list.html :: events_list"></div>
-    <div th:insert="app/components/all_events_list.html :: all_events_list"></div>
+    <div th:insert="app/components/activities_list.html :: events_list"></div>
+    <div th:insert="app/components/all_activities_list.html :: all_events_list"></div>
+    <a th:href="@{/app/activities/create}"  class="btn btn-info">Ajouter</a>
 </div>
 
 </body>

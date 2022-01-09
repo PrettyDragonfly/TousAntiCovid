@@ -2,8 +2,10 @@ package fr.camillebour.covidapp.controllers;
 
 import fr.camillebour.covidapp.models.Activity;
 import fr.camillebour.covidapp.models.CovidAppUserDetails;
+import fr.camillebour.covidapp.models.Location;
 import fr.camillebour.covidapp.models.User;
 import fr.camillebour.covidapp.repositories.ActivityRepository;
+import fr.camillebour.covidapp.repositories.LocationRepository;
 import fr.camillebour.covidapp.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,9 @@ public class AppController {
 
     @Autowired
     private ActivityRepository activityRepo;
+
+    @Autowired
+    private LocationRepository locationRepo;
 
     @GetMapping("/app")
     public String appHome(Authentication authentication, Model model) {
@@ -129,7 +134,7 @@ public class AppController {
         return "app/users_search";
     }
 
-    @GetMapping("/app/events")
+    @GetMapping("/app/activities")
     public String appEvents(Authentication authentication, Model model) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findCustomId(userDetails.getUserId());
@@ -142,10 +147,10 @@ public class AppController {
         model.addAttribute("allEvents", allEvents);
         model.addAttribute("userEvents", userEvents);
 
-        return "app/events";
+        return "app/activities/activities";
     }
 
-    @GetMapping("/app/events/{id}")
+    @GetMapping("/app/activities/{id}")
     public String appActivitiesShow(Authentication authentication, Model model, @PathVariable Long id) {
         CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
         User currentUser = userRepo.findCustomId(userDetails.getUserId());
@@ -162,8 +167,54 @@ public class AppController {
 
         model.addAttribute("activity", act.get());
 
-        //TO CHANGE
-        return "app/events_show";
+        return "app/activities/activity_show";
+    }
+
+    @GetMapping("/app/activities/create")
+    public String appActivitiesCreate(Model model) {
+        List<Location> allLocations = locationRepo.findAll();
+        model.addAttribute("locations", allLocations);
+        return "app/activities/activity_create";
+    }
+
+    @GetMapping("/app/locations")
+    public String appPlaces(Authentication authentication, Model model) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        List<Location> allPlaces = locationRepo.findAll();
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+        model.addAttribute("locations", allPlaces);
+
+        return "app/locations/locations";
+    }
+
+    @GetMapping("/app/locations/{id}")
+    public String appPlacesShow(Authentication authentication, Model model, @PathVariable Long id) {
+        CovidAppUserDetails userDetails = (CovidAppUserDetails) authentication.getPrincipal();
+        User currentUser = userRepo.findCustomId(userDetails.getUserId());
+
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("isAdmin", isCurrentUserAdmin(userDetails));
+
+        Optional<Location> loc = locationRepo.findById(id);
+        if (loc.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "location not found"
+            );
+        }
+
+        model.addAttribute("location", loc.get());
+
+        return "app/locations/location_show";
+    }
+
+    @GetMapping("/app/locations/create")
+    public String appPlacesCreate(Model model) {
+        model.addAttribute("locations", new Location());
+        return "app/locations/location_create";
     }
 
 //    @GetMapping("/app/users")

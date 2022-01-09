@@ -9,8 +9,10 @@
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a th:href="@{/app}" class="nav-link px-2"
                            th:classappend="${activeId == 1} ? link-secondary :  link-dark">Accueil</a></li>
-                    <li><a th:href="@{/app/events}" class="nav-link px-2"
+                    <li><a th:href="@{/app/activities}" class="nav-link px-2"
                            th:classappend="${activeId == 2} ? link-secondary :  link-dark">Evénements</a></li>
+                    <li><a th:href="@{/app/locations}" class="nav-link px-2"
+                           th:classappend="${activeId == 2} ? link-secondary :  link-dark">Lieux</a></li>
                     <li><a th:href="@{/app/users/me/notifications}" class="nav-link px-2"
                            th:classappend="${activeId == 3} ? link-secondary :  link-dark">Notifications</a></li>
                     <li><a href="#" class="nav-link px-2"

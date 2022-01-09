@@ -1,7 +1,7 @@
 <div th:fragment="events_list">
     <h2>Mes événements(<span th:text="${userEvents.size()}"></span>)</h2>
     <ul th:each="event: ${userEvents}">
-        <li><a th:href="@{/app/events/{id}(id=${event.getId()})}"><span th:text="${event.getName()}"></span></a><span
+        <li><a th:href="@{/app/activities/{id}(id=${event.getId()})}"><span th:text="${event.getName()}"></span></a><span
                 th:text="' (' +${event.getParticipants().size()} + ' participants)'"></span></li>
     </ul>
 </div>
