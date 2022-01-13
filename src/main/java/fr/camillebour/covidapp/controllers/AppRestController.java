@@ -259,7 +259,7 @@ public class AppRestController {
         //newActivity.addParticipant(currentUser);
         activityRepo.save(newActivity);
 
-        return new ModelAndView("redirect:/app/events/" + newActivity.getId());
+        return new ModelAndView("redirect:/app/activities/" + newActivity.getId());
     }
 
     @GetMapping("/events/{id}/join")
